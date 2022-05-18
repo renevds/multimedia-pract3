@@ -1,6 +1,8 @@
 #include <cstdio>
 #include <cstdlib>
 #include <string>
+#include <iostream>
+#include <fstream>
 
 #include "psnr.hpp"
 #include "ctpl_stl.h"  // ThreadPool
@@ -93,43 +95,68 @@ struct compression_task {
 };
 
 void compress(compression_task* task) {
+    std::cout << task->output_file << "\n";
     ppm* img = read_ppm(task->input_file);
 
     FILE* output_file = fopen(task->output_file.c_str(), "wb");
     auto myCallback = [&output_file](uint8_t oneByte) { fputc(oneByte, output_file); };
-    bool success = JpegEncoder::writeJpeg(myCallback, img->pixels, img->x, img->y, true, task->quality,
-                                          task->chroma_subsampling);
-    //psnr
-    if(success){
-
-    }
+    task->success = JpegEncoder::writeJpeg(myCallback, img->pixels, img->x, img->y, true, task->quality,
+                                           task->chroma_subsampling);
     fclose(output_file);
+
+    //psnr
+    if (task->success) {
+        FILE* JPGFile;
+        JPGFile = fopen(task->output_file.c_str(), "rb");
+        fseek(JPGFile, 0, SEEK_END);
+        int length = ftell(JPGFile);
+        char* bytes = (char*) malloc(length);
+        fread(bytes, length, 1, JPGFile);
+        fclose(JPGFile);
+        JpegDecoder::Decoder JPGData((const unsigned char*) bytes, (size_t)length);
+
+        task->jpeg_filesize = length;
+        task->rate = (8 * (length / (img->x * img->y)));
+        task->psnr = PSNR::PSNR(img->pixels, JPGData.GetImage(), img->x * img->y * 3);
+        free(bytes);
+    }
 }
 
 void opgave2() {
-    std::string fileName = "artificial";
-    ctpl::thread_pool pool(std::thread::hardware_concurrency());
-    for (int i = 5; i <= 100; i += 5) {
-        // Met chroma
-        pool.push([fileName, i](int thread_id) {
-            compression_task task;
-            task.input_file = std::string("../afbeeldingen/") + fileName + std::string(".ppm");
-            task.output_file = std::string("../out/") + fileName + std::to_string(i) + std::string("chroma.jpeg");
-            task.quality = i;
-            task.chroma_subsampling = true;
-            compress(&task);
-        });
+    //4.2
+    //std::vector<std::string> names = {"test_bw", "test_circle", "test_colorlines", "test_freq", "test_noise","test_noise_bin", "test_star", "big_tree", "kodim01", "kodim05", "kodim11","artificial", "flower_foveon", "leaves_iso_200", "leaves_iso_1600","nightshot_iso_100", "nightshot_iso_1600"};
 
-        // Zonder chroma
-        pool.push([fileName, i](int thread_id) {
-            compression_task task;
-            task.input_file = std::string("../afbeeldingen/") + fileName + std::string(".ppm");
-            task.output_file = std::string("../out/") + fileName + std::to_string(i) + std::string(".jpeg");
-            task.quality = i;
-            compress(&task);
-        });
+    std::vector<std::string> names = {"big_tree"};
+
+    ctpl::thread_pool pool(std::thread::hardware_concurrency());
+
+    for (auto it = names.begin(); it != names.end(); ++it) {
+        std::string fileName = *it;
+        for (int i = 5; i <= 100; i += 5) {
+            // Met chroma
+            pool.push([fileName, i](int thread_id) {
+                compression_task task;
+                task.input_file = std::string("../afbeeldingen/") + fileName + std::string(".ppm");
+                task.output_file = std::string("../out/") + fileName + std::to_string(i) + std::string("chroma.jpeg");
+                task.quality = i;
+                task.chroma_subsampling = true;
+                compress(&task);
+            });
+
+            // Zonder chroma
+            pool.push([fileName, i](int thread_id) {
+                compression_task task;
+                task.input_file = std::string("../afbeeldingen/") + fileName + std::string(".ppm");
+                task.output_file = std::string("../out/") + fileName + std::to_string(i) + std::string(".jpeg");
+                task.quality = i;
+                compress(&task);
+            });
+        }
     }
+
     pool.stop(true);
+
+
 }
 
 void opgave3() {
