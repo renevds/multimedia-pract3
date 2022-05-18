@@ -1,0 +1,3 @@
+groter het detail in de foto & sterker het detail in de foto
+groter de fout door de kwantisatie bij de JPEG compressie
+lager de PSNR
