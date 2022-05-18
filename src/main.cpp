@@ -15,6 +15,38 @@ typedef struct {
     const uint8_t* pixels;
 } ppm;
 
+struct file_data
+{
+    bool Ok;
+    uint32_t Length;
+    char* Bytes;
+};
+
+file_data ReadFile(char* FileName)
+{
+    file_data FileData = {};
+
+    FILE* FileContent;
+    FileContent = fopen(FileName, "rb");
+    if (FileContent)
+    {
+        fseek(FileContent, 0, SEEK_END);
+        FileData.Length = ftell(FileContent);
+        fseek(FileContent, 0, 0);
+        FileData.Bytes = (char *) malloc(FileData.Length);
+        fread(FileData.Bytes, FileData.Length, 1, FileContent);
+        fclose(FileContent);
+        FileData.Ok = true;
+    }
+    else
+    {
+        // TODO (Elias): Logging
+        printf("[ERR] Failed to Open File!\n");
+    }
+
+    return(FileData);
+}
+
 ppm* read_ppm(std::string filename) {
     ppm* img;
     FILE* fp;
@@ -105,20 +137,35 @@ void compress(compression_task* task) {
     fclose(output_file);
 
     //psnr
-    if (task->success) {
-        FILE* JPGFile;
-        JPGFile = fopen(task->output_file.c_str(), "rb");
-        fseek(JPGFile, 0, SEEK_END);
-        int length = ftell(JPGFile);
-        char* bytes = (char*) malloc(length);
-        fread(bytes, length, 1, JPGFile);
-        fclose(JPGFile);
-        JpegDecoder::Decoder JPGData((const unsigned char*) bytes, (size_t)length);
+    if(task->success)
+    {
+        file_data FileDataJPG = ReadFile(&task->output_file[0]);
+        if(FileDataJPG.Ok)
+        {
+            JpegDecoder::Decoder JPGData((const unsigned char *) FileDataJPG.Bytes,
+                                         (size_t) FileDataJPG.Length);
+            if ((img->x * img->y * 3) ==
+                (JPGData.GetWidth() * JPGData.GetHeight() * 3))
+            {
+                task->jpeg_filesize = FileDataJPG.Length;
+                task->psnr = PSNR::PSNR((uint8_t *) img->pixels, JPGData.GetImage(),
+                                  img->x * img->y * 3);
+                task->rate = (8 * (( FileDataJPG.Length) / ((img->x * img->y))));
+            }
+            else
+            {
+                // TODO (Elias): Logging
+                printf("Failed to Decode JPG File!\n");
+            }
+        }
+        else
+        {
+            // TODO (Elias): Logging
+            printf("Failed to Read JPG File!\n");
+            printf("(JPG was produced, but failed to read if for statistics!)\n");
+        }
+        free(FileDataJPG.Bytes);
 
-        task->jpeg_filesize = length;
-        task->rate = (8 * (length / (img->x * img->y)));
-        task->psnr = PSNR::PSNR(img->pixels, JPGData.GetImage(), img->x * img->y * 3);
-        free(bytes);
     }
 }
 
