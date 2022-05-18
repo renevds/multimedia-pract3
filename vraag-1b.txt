@@ -1,0 +1,4 @@
+DCT in de functie processDU met gebruikt van de functie DCT
+kwantisatie in processDU
+zigzagscan in processDU
+entropie-encodering in processDU met gebruik van de functie convertCode

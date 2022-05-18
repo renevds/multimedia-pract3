@@ -84,6 +84,7 @@ struct compression_task {
     std::string input_file; ///< PPM file
     int quality{0};
     bool chroma_subsampling{false};
+    std::string label;
 
     // Compresion Result
     bool success{false};
@@ -106,27 +107,43 @@ void compress(compression_task* task) {
 
     //psnr
     if (task->success) {
-        FILE* JPGFile;
-        JPGFile = fopen(task->output_file.c_str(), "rb");
-        fseek(JPGFile, 0, SEEK_END);
-        int length = ftell(JPGFile);
+
+
+        FILE* FileContent;
+        FileContent = fopen(task->output_file.c_str(), "rb");
+        fseek(FileContent, 0, SEEK_END);
+        long length = ftell(FileContent);
+        fseek(FileContent, 0, 0);
         char* bytes = (char*) malloc(length);
-        fread(bytes, length, 1, JPGFile);
-        fclose(JPGFile);
-        JpegDecoder::Decoder JPGData((const unsigned char*) bytes, (size_t)length);
+        fread(bytes, length, 1, FileContent);
+        fclose(FileContent);
+
+
+        JpegDecoder::Decoder JPGData((const unsigned char*) bytes, (size_t) length);
 
         task->jpeg_filesize = length;
-        task->rate = (8 * (length / (img->x * img->y)));
-        task->psnr = PSNR::PSNR(img->pixels, JPGData.GetImage(), img->x * img->y * 3);
+        task->psnr = PSNR::PSNR((uint8_t*) img->pixels, JPGData.GetImage(),
+                                img->x * img->y * 3);
+        task->rate = 8 * (((double) length / ((double) (img->x * img->y))));
+
+        std::ofstream myfile;
+        myfile.open("../results.csv", std::ios_base::app);
+        myfile << task->label << ", "
+               << (task->chroma_subsampling ? "true" : "false") << ", "
+               << task->psnr << ", "
+               << task->rate << "\n";
+        myfile.close();
         free(bytes);
+
     }
+    free(img);
 }
 
 void opgave2() {
     //4.2
-    //std::vector<std::string> names = {"test_bw", "test_circle", "test_colorlines", "test_freq", "test_noise","test_noise_bin", "test_star", "big_tree", "kodim01", "kodim05", "kodim11","artificial", "flower_foveon", "leaves_iso_200", "leaves_iso_1600","nightshot_iso_100", "nightshot_iso_1600"};
+    std::vector<std::string> names = {"test_bw", "test_circle", "test_colorlines", "test_freq", "test_noise","test_noise_bin", "test_star", "big_tree", "kodim01", "kodim05", "kodim11","artificial", "flower_foveon", "leaves_iso_200", "leaves_iso_1600","nightshot_iso_100", "nightshot_iso_1600"};
 
-    std::vector<std::string> names = {"big_tree"};
+    //std::vector<std::string> names = {"big_tree"};
 
     ctpl::thread_pool pool(std::thread::hardware_concurrency());
 
@@ -140,6 +157,7 @@ void opgave2() {
                 task.output_file = std::string("../out/") + fileName + std::to_string(i) + std::string("chroma.jpeg");
                 task.quality = i;
                 task.chroma_subsampling = true;
+                task.label = fileName;
                 compress(&task);
             });
 
@@ -149,14 +167,13 @@ void opgave2() {
                 task.input_file = std::string("../afbeeldingen/") + fileName + std::string(".ppm");
                 task.output_file = std::string("../out/") + fileName + std::to_string(i) + std::string(".jpeg");
                 task.quality = i;
+                task.label = fileName;
                 compress(&task);
             });
         }
     }
 
     pool.stop(true);
-
-
 }
 
 void opgave3() {
