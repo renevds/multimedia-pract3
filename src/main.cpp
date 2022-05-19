@@ -131,7 +131,8 @@ void compress(compression_task* task) {
         myfile << task->label << ", "
                << (task->chroma_subsampling ? "true" : "false") << ", "
                << task->psnr << ", "
-               << task->rate << "\n";
+               << task->rate << ", "
+               << task->quality << "\n";
         myfile.close();
         free(bytes);
 

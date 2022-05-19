@@ -1,0 +1,3 @@
+groter de verandering in kleur dicht op elkaar zoals in test_colorlines.ppm
+groter het verlies door de chroma subsampling
+lager de PSNR

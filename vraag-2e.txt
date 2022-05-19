@@ -1,0 +1,3 @@
+minder kleuren zoals in test_noise_bin.ppm
+minder verschil met de originele foto na de compressie van de chroma channels
+hoger de kwaliteit
