@@ -54,6 +54,6 @@ typedef std::function<void(uint8_t)> write_byte_cb_t;
 bool writeJpeg(const write_byte_cb_t& output, const void* pixels,
                unsigned short width, unsigned short height, bool isRGB = true,
                unsigned int quality = 90, bool downSample = false,
-               const char* comment = 0);
+               const char* comment = 0, uint8_t n = 0);
 
 }  // namespace JpegEncoder

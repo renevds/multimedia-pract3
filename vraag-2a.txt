@@ -1,3 +1,4 @@
-groter het detail in de foto & sterker het detail in de foto
+groter het detail in de foto & sterker het detail in de foto\
+hoger de frequenties
 groter de fout door de kwantisatie bij de JPEG compressie
 lager de PSNR

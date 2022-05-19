@@ -1,4 +1,5 @@
-meer syntetisch de afbeelding
+meer synthetisch de afbeelding
 minder kleuren && hoger het contrast tussen delen van de figuur
+lager de frequenties
 hoger de compressie
 kleiner de rate

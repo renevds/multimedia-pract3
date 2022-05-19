@@ -102,7 +102,7 @@ void compress(compression_task* task) {
     FILE* output_file = fopen(task->output_file.c_str(), "wb");
     auto myCallback = [&output_file](uint8_t oneByte) { fputc(oneByte, output_file); };
     task->success = JpegEncoder::writeJpeg(myCallback, img->pixels, img->x, img->y, true, task->quality,
-                                           task->chroma_subsampling);
+                                           task->chroma_subsampling, nullptr, 2);
     fclose(output_file);
 
     //psnr
@@ -142,15 +142,16 @@ void compress(compression_task* task) {
 
 void opgave2() {
     //4.2
-    std::vector<std::string> names = {"test_bw", "test_circle", "test_colorlines", "test_freq", "test_noise","test_noise_bin", "test_star", "big_tree", "kodim01", "kodim05", "kodim11","artificial", "flower_foveon", "leaves_iso_200", "leaves_iso_1600","nightshot_iso_100", "nightshot_iso_1600"};
+    //std::vector<std::string> names = {"test_bw", "test_circle", "test_colorlines", "test_freq", "test_noise","test_noise_bin", "test_star", "big_tree", "kodim01", "kodim05", "kodim11","artificial", "flower_foveon", "leaves_iso_200", "leaves_iso_1600","nightshot_iso_100", "nightshot_iso_1600"};
 
-    //std::vector<std::string> names = {"big_tree"};
+    //3a
+    std::vector<std::string> names = {"test_noise", "artificial"};
 
     ctpl::thread_pool pool(std::thread::hardware_concurrency());
 
     for (auto it = names.begin(); it != names.end(); ++it) {
         std::string fileName = *it;
-        for (int i = 5; i <= 100; i += 5) {
+        for (int i = 60; i <= 60; i += 5) {
             // Met chroma
             pool.push([fileName, i](int thread_id) {
                 compression_task task;

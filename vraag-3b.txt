@@ -1,0 +1,2 @@
+Verticale gradiënten en diagonale gradiënten
+De verticale gradiënten zijn gewoon de derde DCT coëfficiënten en de diagonale gradiënten zijn een combinatie van de tweede en de derde
