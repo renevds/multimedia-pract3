@@ -1,0 +1,5 @@
+hoger de filmgevoeligheid
+hoger de pixelatie em korreligheid
+hoger de frequency van delen van de afbeelding
+slechter de JPEG compressie
+lager de PSNR & hoger de rate

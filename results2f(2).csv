@@ -1,0 +1,16 @@
+leaves_iso_200, true, 5.04755, 2.3436, 90
+leaves_iso_200, true, 5.52018, 3.39681, 95
+leaves_iso_200, false, 5.67492, 3.07683, 90
+leaves_iso_200, false, 6.2412, 4.52134, 95
+leaves_iso_1600, true, 4.47123, 2.68679, 90
+leaves_iso_1600, true, 4.94727, 4.05298, 95
+leaves_iso_1600, false, 5.08515, 3.73961, 90
+leaves_iso_1600, false, 5.67968, 5.736, 95
+nightshot_iso_100, true, 6.29553, 0.910175, 90
+nightshot_iso_100, false, 6.89432, 1.3058, 90
+nightshot_iso_100, true, 6.63074, 1.45611, 95
+nightshot_iso_100, false, 7.30423, 2.10408, 95
+nightshot_iso_1600, true, 4.46727, 1.93394, 90
+nightshot_iso_1600, false, 5.07806, 2.96133, 90
+nightshot_iso_1600, true, 4.91275, 3.12854, 95
+nightshot_iso_1600, false, 5.66945, 4.91141, 95

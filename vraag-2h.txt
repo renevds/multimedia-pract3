@@ -1,0 +1,4 @@
+hoger de kwaliteitsparameter
+lager de kwantisatie
+hoger de kwaliteit na compressie
+hoger de PSNR & hoger de rate

@@ -16,7 +16,8 @@ with open(file_name, newline='') as csvfile:
 for i in vals:
     vals[i].sort(key=lambda tup: tup[1])
     print(i)
-    plt.plot([x[1] for x in vals[i]], [x[0] for x in vals[i]], label=i)
+    plt.plot([x[1] for x in vals[i]], [x[0] for x in vals[i]], label=i, zorder=1)
+    plt.scatter([x[1] for x in vals[i]], [x[0] for x in vals[i]], zorder=2, s=5, color="#000000")
 
 labelLines(plt.gca().get_lines(), fontsize=5)
 plt.gca().set_xlabel('Rate (bits/pixel)')
