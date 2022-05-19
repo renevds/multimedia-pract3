@@ -1,2 +1,2 @@
-luminance
-chrominance
+quantLuminance
+quantLominance

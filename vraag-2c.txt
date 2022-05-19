@@ -1,3 +1,5 @@
-Op nightshot_iso_160015 zien we dat de compressie subjectief goed is voor de straten en andere gedetailleerde gebieden.
-Maar in de donkere nacht lucht is breekt het effect door de duidelijke grenzen tussen gebieden met dezelfe kleur.
-De andere afbeeldingen hebben dezelfe PSNR maar meer detail en geen grotre vlakken waardoor deze er subjectief beter uit zien.
+hogere psnr
+betere subjectieve kwaliteit
+soms toch lage subjectieve kwaliteit (zoals nightshot_iso_160015 waar het vlak van de hemel duidelijk opgebroken is)
+maar toch hoge psnr
+
